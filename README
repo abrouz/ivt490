@@ -1,10 +1,7 @@
-This is the homeassistant yaml for the VPmonitor 1.2 for ivt490, vers 1.2 has additional control functions for GTE5 & EXT IN
+Homeassistant ESPHome for ivt490
 
 
-This code is based on https://github.com/stefanh12/IVT_490_esphome with adaption for this HW platform.
-Further based on .....
+This code is based on https://github.com/stefanh12/IVT_490_esphome 
+Further based on https://github.com/uabpra/ivt490 
 
-See WIKI for more info on status on this project https://github.com/uabpra/ivt490/wiki/IVT490-monitor
-
-For more info send mail to: pa6609@hotmail.com
-PCBs, finalized and test boards are also available. Send mail for more info.
+Adapted to work without custom components and to work with ESPHome version >= 2026
