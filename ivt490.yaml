@@ -1,34 +1,20 @@
 esphome:
-  name: ivt490
-  friendly_name: ESPHome IVT490Ctrl
-  platform: ESP8266
+  name: esphome-web-209bc6
+  friendly_name: IVT490
+
+esp8266:
   board: d1_mini
-  includes:
-    - custom_ivt_reader.h
-    - CustomDigipotOutput.h
 
-wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
-
-  # Enable fallback hotspot (captive portal) in case wifi connection fails
-  ap:
-    ssid: "IVT490 Fallback Hotspot"
-    password: "OzrNk8AzQXoQ"
-
-  # Enable fallback hotspot (captive portal) in case wifi connection fails
-captive_portal:
-
-# Enable logging
-logger:
-  baud_rate: 0
+external_components:
+  - source:
+      type: local
+      path: components
+    components: [ivt495twin, custom_digipot]
 
 # Enable Home Assistant API
-
 api:
   encryption:
-    key: "LpZgUE6QuvCDKvMHHPhCdQcoO/CMk9d39IV3VUb7MNB="
-
+    key: "648n6wFHtyv+pvCgiPdyk7xlHXnYRZUycyEdB411G8A="
   services:
     - service: control_pot
       variables:
@@ -45,7 +31,8 @@ number:
     optimistic: true
     min_value: 0
     max_value: 100
-    initial_value: 54
+    initial_value: 0
+    restore_value: true
     step: 1
     mode: slider
     on_value:
@@ -55,36 +42,26 @@ number:
             level: !lambda "return x / 100.0;"
 
 ota:
+  platform: esphome
 
-web_server:
-  port: 80
-
-# UART settings for IVT RX connection (required)
+# UART settings for IVT RX connection
 uart:
   id: uart_bus
-  tx_pin: TX # not used (unstrapped on the VPmon board)
-  rx_pin: RX # hardware dependant
+  tx_pin: GPIO1
+  rx_pin: GPIO3
   rx_buffer_size: 512
   baud_rate: 9600
-  debug:
 
 # SPI Connection to the resistor device
-# CS GPIO16
-
 spi:
   clk_pin: GPIO14
   mosi_pin: GPIO13
   miso_pin: GPIO12
 
 output:
-  - platform: custom
-    type: float
-    lambda: |-
-      auto custom_digipot_output = new CustomDigipotOutput();
-      App.register_component(custom_digipot_output);
-      return {custom_digipot_output};
-    outputs:
-      id: boiler_digipot
+  - platform: custom_digipot
+    id: boiler_digipot
+    cs_pin: 16
 
 button:
   - platform: template
@@ -123,8 +100,6 @@ button:
           id: digipot_level
           value: !lambda "return 70;"
 
-# Example configuration entry
-
 switch:
   - platform: gpio
     pin: GPIO02
@@ -139,7 +114,7 @@ switch:
     icon: "mdi:gate"
 
 sensor:
-  - name: "ivt framlednings temp"
+  - name: "ivt Framlednings temp"
     platform: template
     id: ivtFramledning
     unit_of_measurement: "°C"
@@ -265,17 +240,6 @@ sensor:
     id: ivtULGT1
     unit_of_measurement: "°C"
     lambda: "return {};"
-  - name: "ivt LLT GT3:2 temp"
-    platform: template
-    id: ivtLLGT3_2
-    unit_of_measurement: "°C"
-    lambda: "return {};"
-
-  - name: "ivt ULT GT3:2 temp"
-    platform: template
-    id: ivtULTGT3_2
-    unit_of_measurement: "°C"
-    lambda: "return {};"
 
   - name: "ivt UL GT3:2 temp"
     platform: template
@@ -335,8 +299,57 @@ sensor:
     id: ivtDefaultSV2Open
     lambda: "return {};"
 
-custom_component:
-  - lambda: |-
-      auto my_Ivt495Twin = new Ivt495Twin(id(uart_bus),id(ivtFramledning),id(ivtUte),id(ivtTappvarmvattenTopp),id(ivtVarmvattenMitt),id(ivtVarmevattenBotten),id(ivtRumstemp),id(ivtHetgas),id(ivtExtraAccTank),id(ivtTryckvakt),id(ivtHogtryck),id(ivtLogtryck),id(ivtSemesteraktiv),id(ivtKompressoraktiv),id(ivtSV1Oppna),id(ivtSV1Stang),id(ivtP1Rad),id(ivtFlakt),id(ivtLarmaktiv),id(ivtExternP2),id(ivtLLTGT1),id(ivtLLGT1),id(ivtBVGT1),id(ivtULGT1),id(ivtLLGT3_2),id(ivtULTGT3_2),id(ivtULGT3_2),id(ivtLLGT3_3),id(ivtBVGT3_3),id(ivtSV3BVForskj),id(ivtEffektinkvitVVbehov),id(ivtTillskotstimerVVbehov),id(ivtTappvprio),id(ivtTillskotti10),id(ivtTillskottRAD),id(ivtTillskottTillagg),id(ivtDefaultSV2Open));
-      App.register_component(my_Ivt495Twin);
-      return {my_Ivt495Twin};
+# IVT reader component
+ivt495twin:
+  id: ivt_reader
+  uart_id: uart_bus
+  sensor1: ivtFramledning
+  sensor2: ivtUte
+  sensor3: ivtTappvarmvattenTopp
+  sensor4: ivtVarmvattenMitt
+  sensor5: ivtVarmevattenBotten
+  sensor6: ivtRumstemp
+  sensor7: ivtHetgas
+  sensor8: ivtExtraAccTank
+  sensor9: ivtTryckvakt
+  sensor10: ivtHogtryck
+  sensor11: ivtLogtryck
+  sensor12: ivtSemesteraktiv
+  sensor13: ivtKompressoraktiv
+  sensor14: ivtSV1Oppna
+  sensor15: ivtSV1Stang
+  sensor16: ivtP1Rad
+  sensor17: ivtFlakt
+  sensor18: ivtLarmaktiv
+  sensor19: ivtExternP2
+  sensor20: ivtLLTGT1
+  sensor21: ivtLLGT1
+  sensor22: ivtBVGT1
+  sensor23: ivtULGT1
+  sensor24: ivtULGT3_2
+  sensor25: ivtULGT3_2
+  sensor26: ivtULGT3_2
+  sensor27: ivtLLGT3_3
+  sensor28: ivtBVGT3_3
+  sensor29: ivtSV3BVForskj
+  sensor30: ivtEffektinkvitVVbehov
+  sensor31: ivtTillskotstimerVVbehov
+  sensor32: ivtTappvprio
+  sensor33: ivtTillskotti10
+  sensor34: ivtTillskottRAD
+  sensor35: ivtTillskottTillagg
+  sensor36: ivtDefaultSV2Open
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  min_auth_mode: WPA2
+  ap:
+    ssid: "Esphome-Web-209Bc6"
+    password: "aNNBhu8OpME3"
+
+captive_portal:
+
+# Enable logging
+logger:
+  baud_rate: 0
