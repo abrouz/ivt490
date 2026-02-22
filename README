@@ -1,6 +1,13 @@
-Homeassistant ESPHome for ivt490
+Homeassistant ESPHome for ivt490/IVT495 and esp8266
 
+Tested with d1_mini, but I guess it should work with most esp8266 boards?
 
+Not much configuration needed, easiest is to use the RX pin (GPIO3) to attach to the TX port of the IVT heater.
+Otherwise it might work to change the port in the yaml as well:
+tx_pin: GPIO1
+rx_pin: GPIO3
+Both tx and rx have to be specified, even though tx is not used otherwise ESPHome wont activate the UART....
+ 
 This code is based on https://github.com/stefanh12/IVT_490_esphome 
 Further based on https://github.com/uabpra/ivt490 
 
